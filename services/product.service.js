@@ -39,7 +39,7 @@ class ProductsService {
     return new Promise((res, rej) => {
       setTimeout(()=> {
         res(this.products)
-      }, 4000)
+      }, 1000)
     })
   }
 
