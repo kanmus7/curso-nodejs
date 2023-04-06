@@ -24,7 +24,7 @@ CONSOLA:
  1.4: exit -> salir del contenedor.
 
 INTERFAZ DE PGADMIN:
-En nuestro archivo de docker tener el sgte:
+En nuestro archivo de docker tener lo siguiente:
   pgadmin:
     image: dpage/pgadmin4
     environment:

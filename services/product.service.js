@@ -1,6 +1,8 @@
 //El servicio es quien al final debe tener toda la logica de negocio
 const { faker } = require('@faker-js/faker')
 const boom = require('@hapi/boom')
+const pool = require('./../libs/postgres.pool')
+const sequelize = require('./../libs/sequelize')
 
 
 class ProductsService {
@@ -8,6 +10,8 @@ class ProductsService {
   constructor(){
     this.products = [];
     this.generate();
+    this.pool = pool
+    this.pool.on('error', (err)=> console.log(err))
   }
 
   generate(){
@@ -35,12 +39,10 @@ class ProductsService {
     }
   }
 
-  async find(){
-    return new Promise((res, rej) => {
-      setTimeout(()=> {
-        res(this.products)
-      }, 1000)
-    })
+   async find(){
+   const query = 'SELECT * FROM tasks'
+   const [data, metadata] = await sequelize.query(query)
+   return data
   }
 
   async findOne(id){
