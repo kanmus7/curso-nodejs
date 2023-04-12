@@ -9,6 +9,11 @@ const UserSchema = {
     primaryKey: true,
     type: DataTypes.INTEGER
   },
+  role:{
+    allowNull: false,
+    type: DataTypes.STRING,
+    defaultValue: 'customer'
+  },
   email: {
     allowNull: false,
     type: DataTypes.STRING,
@@ -28,8 +33,11 @@ const UserSchema = {
 
 class User extends Model {
   //static = no necesito declarar el objeto para acceder a estos metodos.
-  static associate(){
-    //associate
+  static associate(models){
+    this.hasOne(models.Customer, {
+      as: 'customer',
+      foreignKey: 'userId'
+    })
   }
 
   static config(sequelize) {

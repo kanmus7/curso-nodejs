@@ -1,13 +1,10 @@
 const boom = require('@hapi/boom')
-const pool = require('./../libs/postgres.pool')
 const { models } = require('./../libs/sequelize')
 
 
 
 class UsersService {
   constructor(){
-    this.pool = pool
-    this.pool.on('error', (err)=> console.log(err))
   }
 
   async create(data){
@@ -16,7 +13,9 @@ class UsersService {
   }
 
   async find(){
-    const response = await models.User.findAll()
+    const response = await models.User.findAll({
+      include: ['customer']
+    })
    return response
   }
 
