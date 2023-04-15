@@ -2,24 +2,27 @@ const express = require('express')
 const router = express.Router()
 const ProductsService = require('./../services/product.service')
 const validatorHandler = require('./../middlewares/validator.handler') //validation middleware always should run on routes
-const schema = require('./../schemas/product.schema')
+const {createProductSchema, getProductSchema, queryProductSchema, updateProductSchema} = require('./../schemas/product.schema')
 
 
 const service = new ProductsService()
 
-router.get('/', async (req, res)=> {
-  const products = await service.find()
-  res.json(products)
- })
+router.get('/',
+  validatorHandler(queryProductSchema, 'query'),
+  async (req, res, next) => {
+    try {
+      const products = await service.find(req.query);
+      res.json(products);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
-//Los enpoints que se tengan de manera especifica (/filter) deben ir antes
-//de los que se tenga de manera dinamica
 
- router.get('/filter', async (req,res) => {
-   res.send('yo soy un filter')
- })
-
- router.get('/:id', validatorHandler(schema.getProductSchema, 'params'), async (req,res, next) => {
+ router.get('/:id',
+  validatorHandler(getProductSchema, 'params'),
+   async (req,res, next) => {
   try {
     const { id } = req.params
     const product = await service.findOne(id)
@@ -29,15 +32,22 @@ router.get('/', async (req, res)=> {
   }
  })
 
- router.post('/', validatorHandler(schema.createProductSchema, 'body') ,
- async (req, res)=>{
-  const data = req.body
-  const newProduct = await service.create(data)
-  res.status(201).json(newProduct)
- })
+ router.post('/',
+ validatorHandler(createProductSchema, 'body'),
+ async (req, res, next) => {
+   try {
+     const body = req.body;
+     const newProduct = await service.create(body);
+     res.status(201).json(newProduct);
+   } catch (error) {
+     next(error);
+   }
+ }
+);
 
- router.patch('/:id', validatorHandler(schema.getProductSchema, 'params'),
-  validatorHandler(schema.updateProductSchema, 'body'),
+
+ router.patch('/:id', validatorHandler(getProductSchema, 'params'),
+  validatorHandler(updateProductSchema, 'body'),
  async (req, res, next)=>{ //recive el objeto de forma parcial
   try {
     const { id } = req.params
